@@ -41,10 +41,35 @@ if(!function_exists("ordutf8")) {
 		return $code;
 	}
 }
-
+if(!function_exists("obfuscate_replacer")) {
+	function obfuscate_replacer(&$matches){
+		global $offset_obfus;
+		//-------------------------------
+		
+		$str = trim(nl2br(strip_tags($matches[2])));
+		$offset_obfus = 0;
+		//-------------------------------
+		$str = html_entity_decode(preg_replace('|\s+|', ' ', preg_replace('|(\s+)?\n(\s+)?|', '',preg_replace('|&nbsp;|', ' ',$str))));
+		$arr = explode("<br />", $str);
+		$out = array();
+		$offset_obfus = 0;
+		foreach($arr as $key=>$value){
+			$offset_obfus = 0;
+			$obfus = "";
+			while ($offset_obfus >= 0) {
+				$obfus .= "&#".ordutf8($value, $offset_obfus).";";
+			}
+			$out[] = $obfus;
+		}
+		$html = implode("<br />", $out);
+		return $html;
+	}
+}
 switch ($e->name) {
 	case "OnWebPagePrerender":{
 		$outputPrepare = $modx->documentOutput;
+		$regex = "#(\{obfuscate\}(.+)\{\/obfuscate})#Usi";
+		$outputPrepare = preg_replace_callback($regex, 'obfuscate_replacer', $outputPrepare);
 		$modx->documentOutput = $outputPrepare;
 		break;
 	}
