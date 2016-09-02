@@ -1,4 +1,6 @@
 # ObfuscateModxEvo plugin for MODX Evo
+## Плагин обфусцирования строки от спам-ботов.
+Пример использования
 ```
 {obfuscate}+7(999)999-99-99{/obfuscate}
 
